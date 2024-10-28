@@ -1,6 +1,6 @@
 # apps/calculator/calculator.py
-from apps.commands.command_parser import parse_command
-from apps.plugins.plugin_manager import PluginManager
+from app.commands.command_parser import parse_command
+from app.plugins.plugin_manager import PluginManager
 
 class Calculator:
     def __init__(self):
