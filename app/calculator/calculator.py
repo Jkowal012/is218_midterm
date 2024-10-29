@@ -1,4 +1,5 @@
 # app/calculator/calculator.py
+
 import logging
 import pandas as pd
 from app.commands.command_parser import parse_command
@@ -65,5 +66,6 @@ class Calculator:
 
     def record_history(self, input_str, result):
         new_entry = {'Input': input_str, 'Result': result}
-        self.history_data = self.history_data.append(new_entry, ignore_index=True)
+        new_row = pd.DataFrame([new_entry])
+        self.history_data = pd.concat([self.history_data, new_row], ignore_index=True)
         self.logger.info(f"Recorded history: {new_entry}")
