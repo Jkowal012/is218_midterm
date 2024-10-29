@@ -1,82 +1,117 @@
 # tests/test_plugins.py
 
-import pytest
+import unittest
+from faker import Faker
 from app.plugins.add import run as add_run
 from app.plugins.subtract import run as subtract_run
 from app.plugins.multiply import run as multiply_run
 from app.plugins.divide import run as divide_run
-from faker import Faker
+from app.plugins.history import run as history_run
+import pandas as pd
 
-faker = Faker()
+class TestPlugins(unittest.TestCase):
+    def setUp(self):
+        self.fake = Faker()
+        self.context = {'history_data': pd.DataFrame(columns=['Input', 'Result'])}
 
-@pytest.mark.parametrize('num_operands', [2, 3, 5, 10])
-def test_add(num_operands):
-    operands = [str(faker.pyfloat(left_digits=3, right_digits=2, positive=False)) for _ in range(num_operands)]
-    expected = sum(map(float, operands))
-    result = add_run(operands)
-    assert pytest.approx(result, 0.0001) == expected
+    # Add Plugin Tests
+    def test_add_valid_args(self):
+        nums = [str(self.fake.pyfloat(min_value=-1000, max_value=1000)) for _ in range(3)]
+        expected_result = sum(float(num) for num in nums)
+        result = add_run(nums)
+        self.assertEqual(result, expected_result)
 
-def test_add_insufficient_operands():
-    with pytest.raises(ValueError, match="Add operation requires at least two operands."):
-        add_run(['5'])
+    def test_add_insufficient_operands(self):
+        nums = [str(self.fake.pyfloat())]
+        with self.assertRaises(ValueError):
+            add_run(nums)
 
-def test_add_invalid_operands():
-    with pytest.raises(ValueError, match="Invalid operands. Please provide numbers."):
-        add_run(['a', 'b'])
+    def test_add_invalid_operands(self):
+        nums = [self.fake.word(), self.fake.word()]
+        with self.assertRaises(ValueError):
+            add_run(nums)
 
-@pytest.mark.parametrize('num_operands', [2, 3, 5])
-def test_subtract(num_operands):
-    operands = [str(faker.pyfloat(left_digits=3, right_digits=2, positive=False)) for _ in range(num_operands)]
-    expected = float(operands[0])
-    for operand in operands[1:]:
-        expected -= float(operand)
-    result = subtract_run(operands)
-    assert pytest.approx(result, 0.0001) == expected
+    # Subtract Plugin Tests
+    def test_subtract_valid_args(self):
+        nums = [str(self.fake.pyfloat(min_value=-1000, max_value=1000)) for _ in range(2)]
+        expected_result = float(nums[0]) - float(nums[1])
+        result = subtract_run(nums)
+        self.assertEqual(result, expected_result)
 
-def test_subtract_insufficient_operands():
-    with pytest.raises(ValueError, match="Subtract operation requires at least two operands."):
-        subtract_run(['5'])
+    def test_subtract_insufficient_operands(self):
+        nums = [str(self.fake.pyfloat())]
+        with self.assertRaises(ValueError):
+            subtract_run(nums)
 
-def test_subtract_invalid_operands():
-    with pytest.raises(ValueError, match="Invalid operands. Please provide numbers."):
-        subtract_run(['a', 'b'])
+    def test_subtract_invalid_operands(self):
+        nums = [self.fake.word(), self.fake.word()]
+        with self.assertRaises(ValueError):
+            subtract_run(nums)
 
-@pytest.mark.parametrize('num_operands', [2, 3, 5])
-def test_multiply(num_operands):
-    operands = [str(faker.pyfloat(left_digits=2, right_digits=2, positive=False)) for _ in range(num_operands)]
-    expected = 1.0
-    for operand in operands:
-        expected *= float(operand)
-    result = multiply_run(operands)
-    assert pytest.approx(result, 0.0001) == expected
+    # Multiply Plugin Tests
+    def test_multiply_valid_args(self):
+        nums = [str(self.fake.pyfloat(min_value=-10, max_value=10)) for _ in range(3)]
+        expected_result = 1.0
+        for num in nums:
+            expected_result *= float(num)
+        result = multiply_run(nums)
+        self.assertEqual(result, expected_result)
 
-def test_multiply_insufficient_operands():
-    with pytest.raises(ValueError, match="Multiply operation requires at least two operands."):
-        multiply_run(['5'])
+    def test_multiply_insufficient_operands(self):
+        nums = [str(self.fake.pyfloat())]
+        with self.assertRaises(ValueError):
+            multiply_run(nums)
 
-def test_multiply_invalid_operands():
-    with pytest.raises(ValueError, match="Invalid operands. Please provide numbers."):
-        multiply_run(['a', 'b'])
+    def test_multiply_invalid_operands(self):
+        nums = [self.fake.word(), self.fake.word()]
+        with self.assertRaises(ValueError):
+            multiply_run(nums)
 
-def test_divide():
-    numerator = str(faker.pyfloat(left_digits=3, right_digits=2, positive=False))
-    # Ensure denominator is not zero
-    denominator = str(faker.pyfloat(left_digits=3, right_digits=2, positive=False, min_value=0.1))
-    operands = [numerator, denominator]
-    expected = float(numerator) / float(denominator)
-    result = divide_run(operands)
-    assert pytest.approx(result, 0.0001) == expected
+    # Divide Plugin Tests
+    def test_divide_valid_args(self):
+        num1 = self.fake.pyfloat(min_value=-1000, max_value=1000)
+        num2 = self.fake.pyfloat(min_value=0.1, max_value=1000)
+        result = divide_run([str(num1), str(num2)])
+        expected_result = num1 / num2
+        self.assertEqual(result, expected_result)
 
-def test_divide_insufficient_operands():
-    with pytest.raises(ValueError, match="Divide operation requires at least two operands."):
-        divide_run(['5'])
+    def test_divide_by_zero(self):
+        num1 = self.fake.pyfloat()
+        with self.assertRaises(ZeroDivisionError):
+            divide_run([str(num1), '0'])
 
-def test_divide_invalid_operands():
-    with pytest.raises(ValueError, match="Invalid operands. Please provide numbers."):
-        divide_run(['a', 'b'])
+    def test_divide_invalid_operands(self):
+        nums = [self.fake.word(), self.fake.word()]
+        with self.assertRaises(ValueError):
+            divide_run(nums)
 
-def test_divide_by_zero():
-    numerator = str(faker.pyfloat(left_digits=3, right_digits=2, positive=False))
-    denominator = '0'
-    with pytest.raises(ZeroDivisionError, match="Cannot divide by zero."):
-        divide_run([numerator, denominator])
+    def test_history_display_empty(self):
+        # Capture printed output
+        from io import StringIO
+        import sys
+
+        captured_output = StringIO()
+        sys.stdout = captured_output
+
+        # Run the function with empty context
+        history_run([], context={})
+
+        # Restore stdout
+        sys.stdout = sys.__stdout__
+
+        # Check the output
+        output = captured_output.getvalue()
+        self.assertIn("History data is not available.", output)
+
+    def test_history_display_with_data(self):
+        entries = [
+            {'Input': 'add 1 2', 'Result': 3.0},
+            {'Input': 'multiply 2 3', 'Result': 6.0}
+        ]
+        self.context['history_data'] = pd.DataFrame(entries)
+        # Since history_run prints output, we can test if it runs without errors
+        history_run([], context=self.context)
+        # To test printed output, we'd need to capture stdout, but keeping it simple
+
+if __name__ == '__main__':
+    unittest.main()

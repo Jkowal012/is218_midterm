@@ -57,12 +57,17 @@ class Calculator:
                         # Record the successful operation in history
                         self.record_history(user_input, result)
 
+                except KeyboardInterrupt:
+                    print("\nGoodbye!")
+                    self.logger.info("User exited the application via KeyboardInterrupt.")
+                    break
                 except Exception as e:
                     print(f"Error: {e}")
                     self.logger.error(f"An error occurred: {e}", exc_info=True)
         finally:
             self.save_history()
             self.logger.info("Calculator REPL terminated.")
+
 
     def record_history(self, input_str, result):
         new_entry = {'Input': input_str, 'Result': result}
