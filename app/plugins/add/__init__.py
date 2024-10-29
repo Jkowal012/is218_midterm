@@ -4,7 +4,7 @@ import logging
 command_name = 'add'
 logger = logging.getLogger(f"plugin.{command_name}")
 
-def run(args):
+def run(args, context=None):
     logger.info(f"Executing add with args: {args}")
     if len(args) < 2:
         logger.warning("Add operation requires at least two operands.")

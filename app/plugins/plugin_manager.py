@@ -26,11 +26,12 @@ class PluginManager:
                 except ModuleNotFoundError as e:
                     self.logger.error(f"Could not load plugin {module_name}: {e}")
 
-    def execute(self, command_name, args):
+    def execute(self, command_name, args, context=None):
         self.logger.info(f"Executing command: {command_name} with args: {args}")
         if command_name in self.plugins:
             try:
-                result = self.plugins[command_name](args)
+                plugin_function = self.plugins[command_name]
+                result = plugin_function(args, context)
                 self.logger.info(f"Command {command_name} executed successfully.")
                 return result
             except Exception as e:
