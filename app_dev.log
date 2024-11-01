@@ -1,0 +1,14 @@
+2024-11-01 15:11:36,642 [INFO] root: Logging is configured.
+2024-11-01 15:11:36,642 [INFO] PluginManager: Loading plugins...
+2024-11-01 15:11:36,644 [INFO] PluginManager: Loaded plugin: divide
+2024-11-01 15:11:36,646 [INFO] PluginManager: Loaded plugin: subtract
+2024-11-01 15:11:36,647 [INFO] PluginManager: Loaded plugin: multiply
+2024-11-01 15:11:36,648 [INFO] PluginManager: Loaded plugin: add
+2024-11-01 15:11:36,649 [INFO] PluginManager: Loaded plugin: history
+2024-11-01 15:11:36,658 [INFO] Calculator: History loaded from CSV file.
+2024-11-01 15:11:36,659 [INFO] Calculator: Calculator initialized.
+2024-11-01 15:11:36,659 [INFO] Calculator: Calculator REPL started.
+2024-11-01 15:11:50,837 [INFO] Calculator: User input: exit
+2024-11-01 15:11:50,838 [INFO] Calculator: User exited the application.
+2024-11-01 15:11:50,842 [INFO] Calculator: History saved to CSV file.
+2024-11-01 15:11:50,842 [INFO] Calculator: Calculator REPL terminated.

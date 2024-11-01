@@ -1,17 +1,19 @@
 # main.py
+
 import logging
 from app.calculator.calculator import Calculator
+from config import LOG_LEVEL, LOG_FILE, ENVIRONMENT  # Import from config.py
 
 def setup_logging():
-    # Configure logging to only write to a file
+    # Configure logging to write to a file and optionally to the console
+    handlers = [logging.FileHandler(LOG_FILE)]
+    if ENVIRONMENT == 'development':
+        handlers.append(logging.StreamHandler())  # Enable console logging in development
+
     logging.basicConfig(
-        level=logging.INFO,  # Set the base logging level
+        level=getattr(logging, LOG_LEVEL),  # Use LOG_LEVEL from config.py
         format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
-        handlers=[
-            logging.FileHandler("app.log"),  # Log messages go to app.log
-            # Remove or comment out StreamHandler to stop console logging
-            # logging.StreamHandler()
-        ]
+        handlers=handlers
     )
     logging.info("Logging is configured.")
 
